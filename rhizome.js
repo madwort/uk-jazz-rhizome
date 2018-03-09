@@ -39,8 +39,7 @@ function title(str) {
 var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }).distance(50).iterations(5))
     .force("charge", d3.forceManyBody().strength(-50.5))
-    .force("center", d3.forceCenter(width / 2, height / 2))
-
+    .force("center", d3.forceCenter(width / 2, height / 2));
 
 
 d3.json("rhizome-json.php", function(error, graph) {
@@ -209,7 +208,6 @@ function highlightNode(target_id) {
   });
 
   second_degree_nodes.forEach(function(n){
-    console.log('node',n);
     links.filter(function(d) {
       return ((d.source.id == n) || (d.target.id == n));
     }).forEach(function(d){
