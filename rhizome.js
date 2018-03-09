@@ -4,6 +4,7 @@ var svg = d3.select("svg"),
 
 // horrible globvar but will do until the inevitable refactoring...
 var links = null;
+var highlight_target_id = "";
 
 // var color = d3.scaleOrdinal(d3.schemeCategory10);
 function color(type) {
@@ -120,9 +121,22 @@ d3.json("rhizome-json.php", function(error, graph) {
     var svg_height = 1000;
 
     node
+        .attr('fx', function(d){
+          if (d.id == highlight_target_id) { 
+            console.log(d.id);
+            return 1; 
+          } else {
+            return null;
+          }
+        })
         .attr("cx", function(d) { 
           radius = size(d.type);
           return d.x = Math.max(radius, Math.min(svg_width - radius, d.x)); 
+         })
+        .attr('fy', function(d){
+           if (d.id == highlight_target_id) { return 1; } else {
+             return null;
+           }
          })
         .attr("cy", function(d) { 
           radius = size(d.type);
@@ -140,9 +154,15 @@ d3.json("rhizome-json.php", function(error, graph) {
         });
 
     link
-        .attr("x1", function(d) { return d.source.x; })
+        .attr("x1", function(d) { 
+          if (d.source.fx != null) {return d.source.fx;};
+          return d.source.x; 
+        })
         .attr("y1", function(d) { return d.source.y; })
-        .attr("x2", function(d) { return d.target.x; })
+        .attr("x2", function(d) { 
+          if (d.target.fx != null) {return d.target.fx;};
+          return d.target.x; 
+        })
         .attr("y2", function(d) { return d.target.y; });
 
   }
@@ -181,6 +201,10 @@ function handleMouseOver(d) {
 function allNodesOpacity(fill_opacity = 1) {
   d3.selectAll('circle').style('fill-opacity', fill_opacity);
   d3.selectAll('text').style('fill-opacity', fill_opacity);
+  d3.selectAll('g.node')
+    .each(function(d){
+      d.fx = null; d.fy = null;
+    })
 }
 
 function idNodeOpacity(id, fill_opacity = 1) {
@@ -191,6 +215,15 @@ function idNodeOpacity(id, fill_opacity = 1) {
 function highlightNode(target_id) {
   // make all nodes nearly transparent
   allNodesOpacity(0.2);
+
+  d3.selectAll('g.node')
+    .each(function(d){
+      if(d.id == target_id) { 
+        d.fx = width / 2; d.fy = height / 2; 
+      }
+    })
+
+  highlight_target_id = target_id;
 
   var second_degree_nodes = [];
 
