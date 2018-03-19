@@ -154,9 +154,9 @@ d3.json(jsonPull, function(error, graph) {
   svg.call(zoom);
   
   // manually zoom so we can see the whole graph
-resetZoomWholeGraph();
+  resetZoomWholeGraph();
 
- function ticked() {
+  function ticked() {
 
     node
         .attr("cx", function(d) { 
