@@ -253,13 +253,17 @@ function highlightNode(target_id, zoomToNode = true) {
       .each(function(d){
         if(d.id == target_id) {
           // zoom to this node
-          zoom.scaleTo(svg, 1.5);
+          zoom.scaleTo(svg, 4);
           zoom.translateTo(svg, d.x, d.y);
         }
       });
   }
 
   var second_degree_nodes = [];
+  var x_min = width;
+  var y_min = height;
+  var x_max = 0;
+  var y_max = 0;
 
   links.filter(function(d) {
     return ((d.source.id == target_id) || (d.target.id == target_id));
@@ -273,6 +277,17 @@ function highlightNode(target_id, zoomToNode = true) {
     idNodeOpacity(d.source.id);
     idNodeOpacity(d.target.id);
     idLinkColor(d.source.id+"-"+d.target.id);
+    x_min = Math.min(x_min, d.source.x);
+    x_min = Math.min(x_min, d.target.x);
+    y_min = Math.min(y_min, d.source.y);
+    y_min = Math.min(y_min, d.target.y);
+    x_max = Math.max(x_max, d.source.x);
+    x_max = Math.max(x_max, d.target.x);
+    y_max = Math.max(y_max, d.source.y);
+    y_max = Math.max(y_max, d.target.y);
+    console.log("node", d.source.x, d.source.y);
+    console.log("node", d.target.x, d.target.y);
+    console.log("mins", x_min,y_min,x_max,y_max);
   });
 
   second_degree_nodes.forEach(function(n){
@@ -282,6 +297,25 @@ function highlightNode(target_id, zoomToNode = true) {
       idNodeOpacity(d.source.id);
       idNodeOpacity(d.target.id);
       idLinkColor(d.source.id+"-"+d.target.id);
+      x_min = Math.min(x_min, d.source.x);
+      x_min = Math.min(x_min, d.target.x);
+      y_min = Math.min(y_min, d.source.y);
+      y_min = Math.min(y_min, d.target.y);
+      x_max = Math.max(x_max, d.source.x);
+      x_max = Math.max(x_max, d.target.x);
+      y_max = Math.max(y_max, d.source.y);
+      y_max = Math.max(y_max, d.target.y);
+      console.log("node", d.source.x, d.source.y);
+      console.log("node", d.target.x, d.target.y);
+      console.log("mins", x_min,y_min,x_max,y_max);
     });
   });
+
+  console.log("final", x_min,y_min,x_max,y_max);
+  console.log("calc", width/(x_max-x_min), height/(y_max-y_min));
+  var newScale = .9 / Math.max((x_max-x_min) / width, (y_min-y_max) / height);
+  console.log(newScale);
+  if (zoomToNode) {
+    zoom.scaleTo(svg, newScale);
+  }
 }
